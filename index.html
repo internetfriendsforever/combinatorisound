@@ -52,17 +52,10 @@
       super(props)
 
       this.state = {
-        combinations: combinations(props.group),
-        tick: 0
+        combinations: combinations(props.group)
       }
 
       this.synth = new Tone.Synth().toMaster()
-    }
-
-    componentWillMount () {
-      setInterval(() => this.setState({
-        tick: this.state.tick + 1
-      }), 100)
     }
 
     componentDidUpdate () {
@@ -72,31 +65,47 @@
     }
 
     getActive () {
-      const { group } = this.props
-      const { combinations, tick } = this.state
+      const { group, tick } = this.props
+      const { combinations } = this.state
       return combinations[~~(tick / group.length) % combinations.length]
     }
 
     getHit () {
-      const { group } = this.props
-      const { tick } = this.state
+      const { group, tick } = this.props
       return group[tick % group.length]
     }
 
     render () {
       const { group } = this.props
-
       return <Visualisation group={group} active={this.getActive()} hit={this.getHit()} />
     }
   }
 
+  class App extends React.Component {
+    state = {
+      tick: 0
+    }
+
+    componentWillMount () {
+      setInterval(() => this.setState({
+        tick: this.state.tick + 1
+      }), 100)
+    }
+
+    render () {
+      const { tick } = this.state
+
+      return (
+        <div style={{ display: 'flex' }}>
+          <div style={{ flex: 1 }}><Instrument tick={tick} group='abcdefghi' tone='A1' /></div>
+          <div style={{ flex: 1 }}><Instrument tick={tick} group='abc' tone='A2' /></div>
+          <div style={{ flex: 1 }}><Instrument tick={tick} group='abce' tone='C2' /></div>
+        </div>
+      )
+    }
+  }
+
   window.addEventListener('load', () => {
-    ReactDOM.render((
-      <div style={{ display: 'flex' }}>
-        <div style={{ flex: 1 }}><Instrument group='abcdefghi' tone='A1' /></div>
-        <div style={{ flex: 1 }}><Instrument group='abc' tone='A2' /></div>
-        <div style={{ flex: 1 }}><Instrument group='abce' tone='C2' /></div>
-      </div>
-    ), document.getElementById('root'))
+    ReactDOM.render(<App />, document.getElementById('root'))
   })
 </script>
