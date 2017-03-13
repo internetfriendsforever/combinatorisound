@@ -89,7 +89,7 @@
     componentWillMount () {
       setInterval(() => this.setState({
         tick: this.state.tick + 1
-      }), 100)
+      }), 200)
     }
 
     render () {
@@ -97,9 +97,9 @@
 
       return (
         <div style={{ display: 'flex' }}>
-          <div style={{ flex: 1 }}><Instrument tick={tick} group='abcdefghi' tone='A1' /></div>
-          <div style={{ flex: 1 }}><Instrument tick={tick} group='abc' tone='A2' /></div>
-          <div style={{ flex: 1 }}><Instrument tick={tick} group='abce' tone='C2' /></div>
+          <div style={{ flex: 1 }}><Instrument tick={tick} group='abcdefghi' tone='A2' /></div>
+          <div style={{ flex: 1 }}><Instrument tick={tick} group='abc' tone='D2' /></div>
+          <div style={{ flex: 1 }}><Instrument tick={tick} group='abcd' tone='F3' /></div>
         </div>
       )
     }
