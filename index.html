@@ -47,7 +47,7 @@
     </svg>
   )
 
-  class App extends React.Component {
+  class Instrument extends React.Component {
     constructor (props) {
       super(props)
 
@@ -62,12 +62,12 @@
     componentWillMount () {
       setInterval(() => this.setState({
         tick: this.state.tick + 1
-      }), 120)
+      }), 100)
     }
 
     componentDidUpdate () {
       if (this.getActive().indexOf(this.getHit()) > -1) {
-        this.synth.triggerAttackRelease('A2', '8n')
+        this.synth.triggerAttackRelease(this.props.tone, 0.01)
       }
     }
 
@@ -91,6 +91,12 @@
   }
 
   window.addEventListener('load', () => {
-    ReactDOM.render(<App group='abcdefg' />, document.getElementById('root'))
+    ReactDOM.render((
+      <div style={{ display: 'flex' }}>
+        <div style={{ flex: 1 }}><Instrument group='abcdefghi' tone='A1' /></div>
+        <div style={{ flex: 1 }}><Instrument group='abc' tone='A2' /></div>
+        <div style={{ flex: 1 }}><Instrument group='abce' tone='C2' /></div>
+      </div>
+    ), document.getElementById('root'))
   })
 </script>
