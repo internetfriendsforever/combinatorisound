@@ -1,0 +1,96 @@
+<meta charset="utf-8" />
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/0.9.0/Tone.js"></script>
+<script src="https://unpkg.com/react@15/dist/react.js"></script>
+<script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+<script type="text/babel">
+  function combinations (str) {
+      const fn = function(active, rest, a) {
+          if (!active && !rest) {
+            return
+          }
+
+          if (!rest) {
+              a.push(active)
+          } else {
+              fn(active + rest[0], rest.slice(1), a)
+              fn(active, rest.slice(1), a)
+          }
+
+          return a
+      }
+
+      return fn('', str, [])
+  }
+
+  const Visualisation = ({ group, active, hit }) => (
+    <svg viewBox="-2 -2 4 4">
+      {_.map(group, (letter, i) => {
+        const thisActive = active.indexOf(letter) > -1
+        const thisHit = hit === letter
+        const angle = (i / group.length - 1) * Math.PI * 2 - (Math.PI / 2)
+        const x = Math.cos(angle)
+        const y = Math.sin(angle)
+
+        return (
+          <g key={i}>
+            <text x={x + 0.1} y={y} fontSize={0.1}>{letter}</text>
+            <circle cx={x} cy={y} r={0.05} fill={thisHit ? 'cyan' : thisActive ? 'red' : 'black'} />
+          </g>
+        )
+      })}
+    </svg>
+  )
+
+  class App extends React.Component {
+    constructor (props) {
+      super(props)
+
+      this.state = {
+        combinations: combinations(props.group),
+        tick: 0
+      }
+
+      this.synth = new Tone.Synth().toMaster()
+    }
+
+    componentWillMount () {
+      setInterval(() => this.setState({
+        tick: this.state.tick + 1
+      }), 120)
+    }
+
+    componentDidUpdate () {
+      if (this.getActive().indexOf(this.getHit()) > -1) {
+        this.synth.triggerAttackRelease('A2', '8n')
+      }
+    }
+
+    getActive () {
+      const { group } = this.props
+      const { combinations, tick } = this.state
+      return combinations[~~(tick / group.length) % combinations.length]
+    }
+
+    getHit () {
+      const { group } = this.props
+      const { tick } = this.state
+      return group[tick % group.length]
+    }
+
+    render () {
+      const { group } = this.props
+
+      return <Visualisation group={group} active={this.getActive()} hit={this.getHit()} />
+    }
+  }
+
+  window.addEventListener('load', () => {
+    ReactDOM.render(<App group='abcdefg' />, document.getElementById('root'))
+  })
+</script>
